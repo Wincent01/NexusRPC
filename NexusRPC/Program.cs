@@ -39,12 +39,14 @@ namespace NexusRPC
             
             var executable = args[0];
 
-            var commands = $"WINEDLLOVERRIDES=\"dinput8.dll=n,b\" wine \"{executable}\"";
-            
             SourceDirectory = Directory.GetCurrentDirectory();
 
             Directory.SetCurrentDirectory(Path.GetDirectoryName(executable));
-            
+
+            var commands = File.Exists(@"dinput8.dll")
+                ? $"WINEDLLOVERRIDES=\"dinput8.dll=n,b\" wine \"{executable}\""
+                : $"wine \"{executable}\"";
+
             await SetupRpc();
             
             ClientWrapper.Execute(commands, HandleOutputAsync);
